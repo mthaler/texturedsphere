@@ -85,6 +85,8 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
 
     setCamera(gl, glu, 30)
 
+    gl.glUseProgram(this.programID)
+
     // Prepare light parameters.
     val SHINE_ALL_DIRECTIONS = 1.0f
     val lightPos = Array[Float](-30, 0, 0, SHINE_ALL_DIRECTIONS)
