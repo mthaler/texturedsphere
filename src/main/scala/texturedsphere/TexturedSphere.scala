@@ -12,7 +12,9 @@ import javax.media.opengl.glu.GLU
 import javax.swing.{JFrame, SwingUtilities}
 
 import com.jogamp.opengl.util.FPSAnimator
-import com.jogamp.opengl.util.texture.TextureIO
+import com.jogamp.opengl.util.texture.{Texture, TextureIO}
+
+import Helpers._
 
 object TexturedSphere {
 
@@ -50,8 +52,8 @@ class TexturedSphere extends GLCanvas with GLEventListener {
 
   addGLEventListener(this)
 
-  private var glu: GLU = null
-  private var earthTexture: com.jogamp.opengl.util.texture.Texture = null
+  private val glu = new GLU()
+  private var earthTexture: Texture = null
 
   override def init(drawable: GLAutoDrawable): Unit = {
 
@@ -59,8 +61,6 @@ class TexturedSphere extends GLCanvas with GLEventListener {
     val stream = getClass().getResourceAsStream("earthmap1k.jpg")
     val data = TextureIO.newTextureData(GLProfile.getDefault, stream, false, "jpg")
     earthTexture = TextureIO.newTexture(data)
-
-    glu = new GLU
 
     val gl = drawable.getGL().getGL2
     drawable.setGL(new DebugGL2(gl)) // enable stack traces
@@ -112,8 +112,8 @@ class TexturedSphere extends GLCanvas with GLEventListener {
     glu.gluQuadricOrientation(earth, GLU.GLU_OUTSIDE)
     glu.gluQuadricTexture(earth, true)
     val radius = 6.378f
-    val slices = 16
-    val stacks = 16
+    val slices = 256
+    val stacks = 256
     glu.gluSphere(earth, radius, slices, stacks)
     glu.gluDeleteQuadric(earth)
   }
@@ -140,5 +140,20 @@ class TexturedSphere extends GLCanvas with GLEventListener {
     // Change back to model view matrix.
     gl.glMatrixMode(GL_MODELVIEW)
     gl.glLoadIdentity()
+  }
+
+  private def newProgram(gl: GL3): Int = {
+    val v: Int = newShaderFromCurrentClass(gl, "vertex.shader", VertexShader)
+    val f: Int = newShaderFromCurrentClass(gl, "fragment.shader", FragmentShader)
+    println(getShaderInfoLog(gl, v))
+    println(getShaderInfoLog(gl, f))
+    val p: Int = createProgram(gl, v, f)
+    //gl.glBindFragDataLocation(p, 0, "outColor")
+    printProgramInfoLog(gl, p)
+//    this.vertexLoc = gl.glGetAttribLocation(p, "position")
+//    this.colorLoc = gl.glGetAttribLocation(p, "color")
+//    this.projMatrixLoc = gl.glGetUniformLocation(p, "projMatrix")
+//    this.viewMatrixLoc = gl.glGetUniformLocation(p, "viewMatrix")
+    p
   }
 }

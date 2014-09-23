@@ -4,7 +4,7 @@ import java.io.{IOException, InputStreamReader, BufferedReader, InputStream}
 import javax.media.opengl.GL3
 import javax.media.opengl.GL2ES2._
 
-class Helpers {
+object Helpers {
 
   sealed abstract class ShaderType
   case object VertexShader extends ShaderType
@@ -65,11 +65,20 @@ class Helpers {
     strBuilder.toString
   }
 
-  private def createProgram(gl: GL3, vertexShaderId: Int, fragmentShaderId: Int): Int = {
+  def createProgram(gl: GL3, vertexShaderId: Int, fragmentShaderId: Int): Int = {
     val programId: Int = gl.glCreateProgram
     gl.glAttachShader(programId, vertexShaderId)
     gl.glAttachShader(programId, fragmentShaderId)
     gl.glLinkProgram(programId)
     programId
+  }
+
+  def newShaderFromCurrentClass(gl: GL3, fileName: String, typ: ShaderType): Int = {
+    val shaderSource = loadStringFileFromCurrentPackage(fileName)
+    val shaderType: Int = if (typ == VertexShader) GL_VERTEX_SHADER else GL_FRAGMENT_SHADER
+    val id: Int = gl.glCreateShader(shaderType)
+    gl.glShaderSource(id, 1, Array[String](shaderSource), null)
+    gl.glCompileShader(id)
+    id
   }
 }
