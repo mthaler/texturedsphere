@@ -1,7 +1,7 @@
 package texturedsphere
 
 import java.io.{IOException, InputStreamReader, BufferedReader, InputStream}
-import javax.media.opengl.GL3
+import javax.media.opengl.GL2
 import javax.media.opengl.GL2ES2._
 
 object Helpers {
@@ -12,7 +12,7 @@ object Helpers {
 
 
   /** Retrieves the info log for the shader */
-  def getShaderInfoLog(gl: GL3, obj: Int): String = {
+  def getShaderInfoLog(gl: GL2, obj: Int): String = {
     val logLen: Int = getShaderParameter(gl, obj, GL_INFO_LOG_LENGTH)
     if (logLen <= 0) return ""
     val retLength: Array[Int] = new Array[Int](1)
@@ -23,14 +23,14 @@ object Helpers {
   }
 
   /** Get a shader parameter value. See 'glGetShaderiv' */
-  private def getShaderParameter(gl: GL3, obj: Int, paramName: Int): Int = {
+  private def getShaderParameter(gl: GL2, obj: Int, paramName: Int): Int = {
     val params = new Array[Int](1)
     gl.glGetShaderiv(obj, paramName, params, 0)
     params(0)
   }
 
   /** Retrieves the info log for the program */
-  def printProgramInfoLog(gl: GL3, obj: Int): String = {
+  def printProgramInfoLog(gl: GL2, obj: Int): String = {
     val logLen: Int = getProgramParameter(gl, obj, GL_INFO_LOG_LENGTH)
     if (logLen <= 0) return ""
     val retLength: Array[Int] = new Array[Int](1)
@@ -41,7 +41,7 @@ object Helpers {
   }
 
   /** Gets a program parameter value */
-  def getProgramParameter(gl: GL3, obj: Int, paramName: Int): Int = {
+  def getProgramParameter(gl: GL2, obj: Int, paramName: Int): Int = {
     val params = new Array[Int](1)
     gl.glGetProgramiv(obj, paramName, params, 0)
     params(0)
@@ -65,7 +65,7 @@ object Helpers {
     strBuilder.toString
   }
 
-  def createProgram(gl: GL3, vertexShaderId: Int, fragmentShaderId: Int): Int = {
+  def createProgram(gl: GL2, vertexShaderId: Int, fragmentShaderId: Int): Int = {
     val programId: Int = gl.glCreateProgram
     gl.glAttachShader(programId, vertexShaderId)
     gl.glAttachShader(programId, fragmentShaderId)
@@ -73,7 +73,7 @@ object Helpers {
     programId
   }
 
-  def newShaderFromCurrentClass(gl: GL3, fileName: String, typ: ShaderType): Int = {
+  def newShaderFromCurrentClass(gl: GL2, fileName: String, typ: ShaderType): Int = {
     val shaderSource = loadStringFileFromCurrentPackage(fileName)
     val shaderType: Int = if (typ == VertexShader) GL_VERTEX_SHADER else GL_FRAGMENT_SHADER
     val id: Int = gl.glCreateShader(shaderType)

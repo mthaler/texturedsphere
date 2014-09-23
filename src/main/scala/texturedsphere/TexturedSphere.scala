@@ -23,8 +23,10 @@ object TexturedSphere {
 
 
     SwingUtilities.invokeLater(new Runnable {
-      def run {
-        val canvas = new TexturedSphere
+      def run() {
+        val glp = GLProfile.get(GLProfile.GL2)
+        val glCapabilities: GLCapabilities = new GLCapabilities(glp)
+        val canvas = new TexturedSphere(glCapabilities)
         canvas.setPreferredSize(new Dimension(640, 480))
         val animator = new FPSAnimator(canvas, 60, true)
         val frame = new JFrame
@@ -48,12 +50,13 @@ object TexturedSphere {
   }
 }
 
-class TexturedSphere extends GLCanvas with GLEventListener {
+class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventListener {
 
   addGLEventListener(this)
 
   private val glu = new GLU()
   private var earthTexture: Texture = null
+  private var programID = -1
 
   override def init(drawable: GLAutoDrawable): Unit = {
 
@@ -61,6 +64,9 @@ class TexturedSphere extends GLCanvas with GLEventListener {
     val stream = getClass().getResourceAsStream("earthmap1k.jpg")
     val data = TextureIO.newTextureData(GLProfile.getDefault, stream, false, "jpg")
     earthTexture = TextureIO.newTexture(data)
+
+
+    this.programID = newProgram(drawable.getGL.getGL2)
 
     val gl = drawable.getGL().getGL2
     drawable.setGL(new DebugGL2(gl)) // enable stack traces
@@ -142,7 +148,7 @@ class TexturedSphere extends GLCanvas with GLEventListener {
     gl.glLoadIdentity()
   }
 
-  private def newProgram(gl: GL3): Int = {
+  private def newProgram(gl: GL2): Int = {
     val v: Int = newShaderFromCurrentClass(gl, "vertex.shader", VertexShader)
     val f: Int = newShaderFromCurrentClass(gl, "fragment.shader", FragmentShader)
     println(getShaderInfoLog(gl, v))
