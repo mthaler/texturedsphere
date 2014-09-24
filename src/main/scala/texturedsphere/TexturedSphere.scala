@@ -60,16 +60,19 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
 
   override def init(drawable: GLAutoDrawable): Unit = {
 
+    val gl = drawable.getGL().getGL2
+    drawable.setGL(new DebugGL2(gl)) // enable stack traces
+
+    this.programID = newProgram(drawable.getGL.getGL2)
+
     // Load earth texture.
     val stream = getClass().getResourceAsStream("earthmap1k.jpg")
     val data = TextureIO.newTextureData(GLProfile.getDefault, stream, false, "jpg")
     earthTexture = TextureIO.newTexture(data)
-
-
-    this.programID = newProgram(drawable.getGL.getGL2)
-
-    val gl = drawable.getGL().getGL2
-    drawable.setGL(new DebugGL2(gl)) // enable stack traces
+    earthTexture.setTexParameteri(gl, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT)
+    earthTexture.setTexParameteri(gl, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT)
+    earthTexture.setTexParameteri(gl, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR)
+    earthTexture.setTexParameteri(gl, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR)
 
     // Global settings.
     gl.glEnable(GL_DEPTH_TEST)
@@ -90,6 +93,9 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
 
     val numEnabledLightsLog = gl.glGetUniformLocation(this.programID, "NumEnabledLights")
     gl.glUniform1i(numEnabledLightsLog, 1)
+
+    val texLoc = gl.glGetUniformLocation(this.programID, "EarthTexture")
+    gl.glUniform1i(texLoc, 0)
 
     // Prepare light parameters.
     val SHINE_ALL_DIRECTIONS = 1.0f
