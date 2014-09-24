@@ -76,7 +76,7 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
     gl.glDepthFunc(GL_LEQUAL)
     gl.glShadeModel(GL_SMOOTH)
     gl.glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST)
-    gl.glClearColor(0f, 0f, 0f, 1f)
+    gl.glClearColor(0f, 0f, 0f, 0f)
   }
 
   override def display(drawable: GLAutoDrawable): Unit = {

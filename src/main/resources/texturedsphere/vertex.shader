@@ -1,26 +1,6 @@
-#version 130
+
 
 uniform int NumEnabledLights;
-
-void main()
-{
-	gl_Position = ftransform();
-
-    vec4 amb;
-    vec4 diff;
-    vec4 spec;
-
-    // Clear the light intensity accumulators
-    amb = vec4(0.0);
-    diff = vec4(0.0);
-    spec = vec4(0.0);
-
-    // Loop through enabled lights, compute contribution from each
-    for (int i = 0; i < NumEnabledLights; i++)
-    {
-
-    }
-}
 
 void DirectionalLight(in int i,
                       in vec3 normal,
@@ -45,7 +25,7 @@ void DirectionalLight(in int i,
     specular += gl_LightSource[i].specular * pf;
 }
 
-void DirectionalLight(in int i,
+void PointLight(in int i,
                       in vec3 eye,
                       in vec3 ecPosition3,
                       in vec3 normal,
@@ -146,4 +126,49 @@ void SpotLight(in int i,
     ambient += gl_LightSource[i].ambient * attenuation;
     diffuse += gl_LightSource[i].diffuse * nDotVP * attenuation;
     specular += gl_LightSource[i].specular * pf * attenuation;
+}
+
+
+void main()
+{
+	gl_Position = ftransform();
+
+    vec4 amb;
+    vec4 diff;
+    vec4 spec;
+    vec3 normal;
+    vec4 ecPosition;
+    vec3 ecPosition3;
+    vec3 eye;
+
+    // Clear the light intensity accumulators
+    amb = vec4(0.0);
+    diff = vec4(0.0);
+    spec = vec4(0.0);
+
+    normal = gl_NormalMatrix * gl_Normal;
+
+    ecPosition = gl_ModelViewMatrix * gl_Vertex;
+    ecPosition3 = (vec3(ecPosition)) / ecPosition.w;
+
+    eye = vec3(0.0, 0.0, 1.0);
+
+    // Loop through enabled lights, compute contribution from each
+    for (int i = 0; i < NumEnabledLights; i++)
+    {
+        if (gl_LightSource[i].position.w == 0.0)
+            DirectionalLight(i, normal, amb, diff, spec);
+        else if (gl_LightSource[i].spotCutoff == 180.0)
+            PointLight(i, eye, ecPosition3, normal, amb, diff, spec);
+        else
+            SpotLight(i, eye, ecPosition3, normal, amb, diff, spec);
+    }
+
+    vec4 color;
+
+    color = gl_FrontLightModelProduct.sceneColor +
+            amb * gl_FrontMaterial.ambient +
+            diff * gl_FrontMaterial.diffuse;
+
+    gl_FrontColor = color;
 }
