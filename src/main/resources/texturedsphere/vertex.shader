@@ -1,9 +1,25 @@
 #version 130
 
+uniform int NumEnabledLights;
+
 void main()
 {
-
 	gl_Position = ftransform();
+
+    vec4 amb;
+    vec4 diff;
+    vec4 spec;
+
+    // Clear the light intensity accumulators
+    amb = vec4(0.0);
+    diff = vec4(0.0);
+    spec = vec4(0.0);
+
+    // Loop through enabled lights, compute contribution from each
+    for (int i = 0; i < NumEnabledLights; i++)
+    {
+
+    }
 }
 
 void DirectionalLight(in int i,

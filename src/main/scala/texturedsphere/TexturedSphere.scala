@@ -87,6 +87,10 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
 
     gl.glUseProgram(this.programID)
 
+
+    val numEnabledLightsLog = gl.glGetUniformLocation(this.programID, "NumEnabledLights")
+    gl.glUniform1i(numEnabledLightsLog, 1)
+
     // Prepare light parameters.
     val SHINE_ALL_DIRECTIONS = 1.0f
     val lightPos = Array[Float](-30, 0, 0, SHINE_ALL_DIRECTIONS)
@@ -101,6 +105,7 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
     // Enable lighting in GL.
     gl.glEnable(GL_LIGHT1)
     gl.glEnable(GL_LIGHTING)
+
 
     // Set material properties.
     val rgba = Array[Float](1f, 1f, 1f)
