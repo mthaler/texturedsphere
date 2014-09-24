@@ -90,34 +90,11 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
 
     gl.glUseProgram(this.programID)
 
-
-    val numEnabledLightsLog = gl.glGetUniformLocation(this.programID, "NumEnabledLights")
-    gl.glUniform1i(numEnabledLightsLog, 1)
+    val lightLoc = gl.glGetUniformLocation(this.programID, "LightPosition")
+    gl.glUniform3f(lightLoc, 100.0f, 0.0f, 100.0f)
 
     val texLoc = gl.glGetUniformLocation(this.programID, "EarthTexture")
     gl.glUniform1i(texLoc, 0)
-
-    // Prepare light parameters.
-    val SHINE_ALL_DIRECTIONS = 1.0f
-    val lightPos = Array[Float](-30, 0, 0, SHINE_ALL_DIRECTIONS)
-    val lightColorAmbient = Array[Float](0.2f, 0.2f, 0.2f, 1f)
-    val lightColorSpecular = Array[Float](0.8f, 0.8f, 0.8f, 1f)
-
-    // Set light parameters.
-    gl.glLightfv(GL_LIGHT1, GL_POSITION, lightPos, 0)
-    gl.glLightfv(GL_LIGHT1, GL_AMBIENT, lightColorAmbient, 0)
-    gl.glLightfv(GL_LIGHT1, GL_SPECULAR, lightColorSpecular, 0)
-
-    // Enable lighting in GL.
-    gl.glEnable(GL_LIGHT1)
-    gl.glEnable(GL_LIGHTING)
-
-
-    // Set material properties.
-    val rgba = Array[Float](1f, 1f, 1f)
-    gl.glMaterialfv(GL.GL_FRONT, GL_AMBIENT, rgba, 0)
-    gl.glMaterialfv(GL.GL_FRONT, GL_SPECULAR, rgba, 0)
-    gl.glMaterialf(GL.GL_FRONT, GL_SHININESS, 0.5f)
 
     // Apply texture.
     earthTexture.enable(gl)
