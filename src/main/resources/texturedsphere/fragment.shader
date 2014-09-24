@@ -14,7 +14,7 @@ void main()
 
 	vec2 clouds = texture2D(EarthCloudGloss, TexCoord).rg;
 	//vec3 daytime = (texture2D(EarthDay, TexCoord).rgb * Diffuse + Specular * clouds.g) * (1.0 - clouds.r) + clouds.r * Diffuse;
-    vec3 daytime = texture2D(EarthDay, TexCoord).rgb;
+    vec3 daytime = texture2D(EarthDay, TexCoord).rgb * Diffuse + Specular * clouds.g;
 
 	//vec3 nighttime = texture2D(EarthNight, TexCoord).rgb * (1.0 - clouds.r) * 2.0;
     vec3 nighttime = texture2D(EarthNight, TexCoord);

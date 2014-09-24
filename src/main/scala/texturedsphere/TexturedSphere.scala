@@ -59,6 +59,7 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
   private var earthTexture: Texture = null
   private var nightTexture: Texture = null
   private var specTexture: Texture = null
+  private var rot = 0.0f
 
   private var programID = -1
 
@@ -102,7 +103,7 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
     gl.glUseProgram(this.programID)
 
     val lightLoc = gl.glGetUniformLocation(this.programID, "LightPosition")
-    gl.glUniform3f(lightLoc, 100.0f, 0.0f, 50.0f)
+    gl.glUniform3f(lightLoc, 100.0f, 0.0f, 100.0f)
 
     var texLoc = gl.glGetUniformLocation(this.programID, "EarthDay")
     gl.glUniform1i(texLoc, 0)
@@ -126,6 +127,7 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
     specTexture.enable(gl)
     specTexture.bind(gl)
 
+    gl.glRotatef(rot,1.0f,0.0f,0.0f);
 
     // Draw sphere (possible styles: FILL, LINE, POINT).
     gl.glColor3f(0.3f, 0.5f, 1f)
@@ -139,6 +141,8 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
     val stacks = 256
     glu.gluSphere(earth, radius, slices, stacks)
     glu.gluDeleteQuadric(earth)
+
+    rot += 0.2f
   }
 
   override def reshape(drawable: GLAutoDrawable, x: Int, y: Int, width: Int, height: Int): Unit = {
