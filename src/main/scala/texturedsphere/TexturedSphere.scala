@@ -55,8 +55,23 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
   addGLEventListener(this)
 
   private val glu = new GLU()
+
   private var earthTexture: Texture = null
+  private var nightTexture: Texture = null
+  private var specTexture: Texture = null
+
   private var programID = -1
+
+  private def loadTexture(gl: GL2, filename: String): Texture = {
+    val stream = getClass().getResourceAsStream(filename)
+    val data = TextureIO.newTextureData(GLProfile.getDefault, stream, false, "jpg")
+    val tex = TextureIO.newTexture(data)
+    tex.setTexParameteri(gl, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT)
+    tex.setTexParameteri(gl, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT)
+    tex.setTexParameteri(gl, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR)
+    tex.setTexParameteri(gl, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR)
+    tex
+  }
 
   override def init(drawable: GLAutoDrawable): Unit = {
 
@@ -65,14 +80,10 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
 
     this.programID = newProgram(drawable.getGL.getGL2)
 
-    // Load earth texture.
-    val stream = getClass().getResourceAsStream("earthmap1k.jpg")
-    val data = TextureIO.newTextureData(GLProfile.getDefault, stream, false, "jpg")
-    earthTexture = TextureIO.newTexture(data)
-    earthTexture.setTexParameteri(gl, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT)
-    earthTexture.setTexParameteri(gl, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT)
-    earthTexture.setTexParameteri(gl, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR)
-    earthTexture.setTexParameteri(gl, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR)
+    // Load textures.
+    earthTexture = loadTexture(gl, "earthmap_day.jpg")
+    nightTexture = loadTexture(gl, "earthlights.jpg")
+    specTexture = loadTexture(gl, "earthmap_specular.jpg")
 
     // Global settings.
     gl.glEnable(GL_DEPTH_TEST)
@@ -97,8 +108,18 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
     gl.glUniform1i(texLoc, 0)
 
     // Apply texture.
+    gl.glActiveTexture(GL_TEXTURE0)
     earthTexture.enable(gl)
     earthTexture.bind(gl)
+
+    gl.glActiveTexture(GL_TEXTURE1)
+    nightTexture.enable(gl)
+    nightTexture.bind(gl)
+
+    gl.glActiveTexture(GL_TEXTURE2)
+    specTexture.enable(gl)
+    specTexture.bind(gl)
+
 
     // Draw sphere (possible styles: FILL, LINE, POINT).
     gl.glColor3f(0.3f, 0.5f, 1f)
@@ -144,12 +165,7 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
     println(getShaderInfoLog(gl, v))
     println(getShaderInfoLog(gl, f))
     val p: Int = createProgram(gl, v, f)
-    //gl.glBindFragDataLocation(p, 0, "outColor")
     printProgramInfoLog(gl, p)
-//    this.vertexLoc = gl.glGetAttribLocation(p, "position")
-//    this.colorLoc = gl.glGetAttribLocation(p, "color")
-//    this.projMatrixLoc = gl.glGetUniformLocation(p, "projMatrix")
-//    this.viewMatrixLoc = gl.glGetUniformLocation(p, "viewMatrix")
     p
   }
 }
