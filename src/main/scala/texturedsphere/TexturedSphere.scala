@@ -102,10 +102,16 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
     gl.glUseProgram(this.programID)
 
     val lightLoc = gl.glGetUniformLocation(this.programID, "LightPosition")
-    gl.glUniform3f(lightLoc, 100.0f, 0.0f, 100.0f)
+    gl.glUniform3f(lightLoc, 100.0f, 0.0f, 50.0f)
 
-    val texLoc = gl.glGetUniformLocation(this.programID, "EarthTexture")
+    var texLoc = gl.glGetUniformLocation(this.programID, "EarthDay")
     gl.glUniform1i(texLoc, 0)
+
+    texLoc = gl.glGetUniformLocation(this.programID, "EarthNight")
+    gl.glUniform1i(texLoc, 1)
+
+    texLoc = gl.glGetUniformLocation(this.programID, "EarthCloudGloss")
+    gl.glUniform1i(texLoc, 2)
 
     // Apply texture.
     gl.glActiveTexture(GL_TEXTURE0)

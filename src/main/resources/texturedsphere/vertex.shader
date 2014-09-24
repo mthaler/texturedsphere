@@ -1,8 +1,8 @@
-varying float LightIntensity;
-uniform vec3 LightPosition;
+varying float Diffuse;
+varying vec3 Specular;
+varying vec2 TexCoord;
 
-const float specularContribution = 0.1;
-const float diffuseContribution = 1.0 - specularContribution;
+uniform vec3 LightPosition;
 
 void main()
 {
@@ -13,10 +13,11 @@ void main()
     vec3 viewVec = normalize(-ecPosition);
 
     float spec = clamp(dot(reflectVec, viewVec), 0.0, 1.0);
-    spec = pow(spec, 16.0);
+    spec = pow(spec, 8.0);
+    Specular = vec3(spec) * vec3(1.0, 0.941, 0.898) * 0.3;
 
-    LightIntensity = diffuseContribution * max(dot(lightVec, tnorm), 0.0) + specularContribution * spec;
+    Diffuse = max(dot(lightVec, tnorm), 0.0);
 
-    gl_TexCoord[0] = gl_MultiTexCoord0;
+    TexCoord = gl_MultiTexCoord0.st;
 	gl_Position = ftransform();
 }
