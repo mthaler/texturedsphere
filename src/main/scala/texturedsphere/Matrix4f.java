@@ -41,12 +41,12 @@ class Matrix4f {
         dest[15] = M33;
     }
 
-    void setZero() {
+    private void setZero() {
         M00 = M01 = M02 = M03 = M10 = M11 = M12 = M13 = M20 = M21 = M22 =
                 M23 = M30 = M31 = M32 = M33 = 0.0f;
     }
 
-    void setIdentity() {
+    private void setIdentity() {
         setZero();
         M00 = M11 = M22 = M33 = 1.0f;
     }

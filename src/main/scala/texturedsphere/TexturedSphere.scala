@@ -73,8 +73,8 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
 
   private var programID = -1
 
-  private val LastRot = new Matrix4f()
-  private val ThisRot = new Matrix4f()
+  private var LastRot = new Matrix4f()
+  private var ThisRot = new Matrix4f()
   private val matrixLock = new Object()
   private val matrix = new Array[Float](16)
 
@@ -110,8 +110,8 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
   override def init(drawable: GLAutoDrawable): Unit = {
 
     // Start Of User Initialization
-    LastRot.setIdentity()                                // Reset Rotation
-    ThisRot.setIdentity()                                // Reset Rotation
+    LastRot = new Matrix4f()                                // Reset Rotation
+    ThisRot = new Matrix4f()                                // Reset Rotation
     ThisRot.get(matrix)
 
     val gl = drawable.getGL.getGL2
