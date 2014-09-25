@@ -1,5 +1,7 @@
 package texturedsphere;
 
+import com.jogamp.opengl.math.Matrix4;
+
 class Matrix4f {
     float M00;
     float M10;
@@ -106,9 +108,11 @@ class Matrix4f {
      * @param m1 the first matrix
      * @param m2 the second matrix
      */
-    public final void mul(Matrix4f m1, Matrix4f m2) {
+
+    public final Matrix4f mul(Matrix4f m1, Matrix4f m2) {
         // alias-safe way.
-        set(
+        final Matrix4f result = new Matrix4f();
+        result.set(
                 m1.M00 * m2.M00 + m1.M01 * m2.M10 + m1.M02 * m2.M20 + m1.M03 * m2.M30,
                 m1.M00 * m2.M01 + m1.M01 * m2.M11 + m1.M02 * m2.M21 + m1.M03 * m2.M31,
                 m1.M00 * m2.M02 + m1.M01 * m2.M12 + m1.M02 * m2.M22 + m1.M03 * m2.M32,
@@ -129,6 +133,7 @@ class Matrix4f {
                 m1.M30 * m2.M02 + m1.M31 * m2.M12 + m1.M32 * m2.M22 + m1.M33 * m2.M32,
                 m1.M30 * m2.M03 + m1.M31 * m2.M13 + m1.M32 * m2.M23 + m1.M33 * m2.M33
         );
+        return result;
     }
 
     /**

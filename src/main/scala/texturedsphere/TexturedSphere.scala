@@ -102,7 +102,7 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
       val quat = arcBall.drag( e.getPoint)
       matrixLock.synchronized {
         ThisRot.setRotation(quat)  // Convert Quaternion Into Matrix3fT
-        ThisRot.mul( ThisRot, LastRot) // Accumulate Last Rotation Into This One
+        ThisRot = ThisRot.mul( ThisRot, LastRot) // Accumulate Last Rotation Into This One
       }
     }
   })
