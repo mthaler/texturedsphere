@@ -1,6 +1,6 @@
 package texturedsphere
 
-import java.awt.Dimension
+import java.awt.{Point, Dimension}
 import java.awt.event._
 import javax.media.opengl.GL._
 import javax.media.opengl.GL2ES1._
@@ -48,36 +48,6 @@ object TexturedSphere {
       }
     })
   }
-}
-
-class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventListener {
-
-  addGLEventListener(this)
-
-  addMouseListener(new MouseAdapter {
-
-    override def mousePressed(e: MouseEvent): Unit = {
-      println("mouse pressed: " + e.getPoint)
-    }
-
-    override def mouseReleased(e: MouseEvent): Unit = {
-      println("mouse released: " + e.getPoint)
-    }
-  })
-
-  addMouseMotionListener(new MouseMotionAdapter {
-    override def mouseDragged(e: MouseEvent): Unit = {
-      println("mouse dragged: " + e.getPoint)
-    }
-  })
-
-  private val glu = new GLU()
-
-  private var earthTexture: Texture = null
-  private var nightTexture: Texture = null
-  private var specTexture: Texture = null
-
-  private var programID = -1
 
   private def loadTexture(gl: GL2, filename: String): Texture = {
     val stream = getClass().getResourceAsStream(filename)
@@ -89,6 +59,42 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
     tex.setTexParameteri(gl, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR)
     tex
   }
+}
+
+class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventListener {
+
+  import TexturedSphere._
+
+  private val glu = new GLU()
+
+  private var earthTexture: Texture = null
+  private var nightTexture: Texture = null
+  private var specTexture: Texture = null
+
+  private var programID = -1
+
+  private var pos = new Point(0,0)
+
+  addGLEventListener(this)
+
+  addMouseListener(new MouseAdapter {
+
+    override def mousePressed(e: MouseEvent): Unit = {
+      pos = e.getPoint
+      println("mouse pressed: " + e.getPoint)
+    }
+
+    override def mouseReleased(e: MouseEvent): Unit = {
+      pos = e.getPoint
+      println("mouse released: " + e.getPoint)
+    }
+  })
+
+  addMouseMotionListener(new MouseMotionAdapter {
+    override def mouseDragged(e: MouseEvent): Unit = {
+      println("angle: " + computeArcballAngle(e.getPoint))
+    }
+  })
 
   override def init(drawable: GLAutoDrawable): Unit = {
 
@@ -191,11 +197,27 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
     p
   }
 
-  private def computeArcballVector(screenX: Int, screenY: Int): (Double, Double, Double) = {
+  private def computeArcballVector(screenX: Int, screenY: Int): Vector3 = {
+    import math._
     val x = 1.0 * screenX / getWidth * 2 - 1.0
     val y = -1.0 * screenY / getHeight * 2 - 1.0
     val opSquared = x * x + y * y
-    val z = if (opSquared <= 1) math.sqrt(1 - opSquared) else 0
-    null
+    if (opSquared <= 1) {
+      new Vector3(x, y, sqrt(1 - opSquared))
+    } else {
+      new Vector3(x, y , 0).normalize()
+    }
+  }
+
+  private def computeArcballAngle(currentPos: Point): Double = {
+    import math._
+    if (currentPos != pos) {
+      val va = computeArcballVector(pos.x, pos.y)
+      val vb = computeArcballVector(currentPos.x, currentPos.y)
+      val angle = acos(min(1.0, va.dotProduct(vb)))
+      angle
+    } else {
+      0.0
+    }
   }
 }
