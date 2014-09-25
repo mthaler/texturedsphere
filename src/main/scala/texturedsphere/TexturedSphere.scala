@@ -73,30 +73,48 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
 
   private var programID = -1
 
-  private var pos = new Point(0,0)
+  private val LastRot = new Matrix4f()
+  private val ThisRot = new Matrix4f()
+  private val matrixLock = new Object()
+  private val matrix = new Array[Float](16)
+
+  private val arcBall = new ArcBall(640.0f, 480.0f)  // NEW: ArcBall Instance
 
   addGLEventListener(this)
 
   addMouseListener(new MouseAdapter {
 
     override def mousePressed(e: MouseEvent): Unit = {
-      pos = e.getPoint
-      println("mouse pressed: " + e.getPoint)
+      matrixLock.synchronized {
+        LastRot.set( ThisRot ) // Set Last Static Rotation To Last Dynamic One
+      }
+      arcBall.click( e.getPoint )    // Update Start Vector And Prepare For Dragging
     }
 
     override def mouseReleased(e: MouseEvent): Unit = {
-      pos = e.getPoint
       println("mouse released: " + e.getPoint)
     }
   })
 
   addMouseMotionListener(new MouseMotionAdapter {
     override def mouseDragged(e: MouseEvent): Unit = {
-      println("mouse dragged: " + e.getPoint)
+      val ThisQuat = new Quat4f()
+
+      // Update End Vector And Get Rotation As Quaternion
+      arcBall.drag( e.getPoint, ThisQuat)
+      matrixLock.synchronized {
+        ThisRot.setRotation(ThisQuat)  // Convert Quaternion Into Matrix3fT
+        ThisRot.mul( ThisRot, LastRot) // Accumulate Last Rotation Into This One
+      }
     }
   })
 
   override def init(drawable: GLAutoDrawable): Unit = {
+
+    // Start Of User Initialization
+    LastRot.setIdentity()                                // Reset Rotation
+    ThisRot.setIdentity()                                // Reset Rotation
+    ThisRot.get(matrix)
 
     val gl = drawable.getGL().getGL2
     drawable.setGL(new DebugGL2(gl)) // enable stack traces
@@ -117,6 +135,10 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
   }
 
   override def display(drawable: GLAutoDrawable): Unit = {
+    matrixLock.synchronized {
+      ThisRot.get(matrix)
+    }
+
     val gl = drawable.getGL.getGL2
     gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
@@ -149,6 +171,9 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
     specTexture.enable(gl)
     specTexture.bind(gl)
 
+    gl.glPushMatrix();                  // NEW: Prepare Dynamic Transform
+    gl.glMultMatrixf(matrix, 0);
+
     // Draw sphere (possible styles: FILL, LINE, POINT).
     gl.glColor3f(0.3f, 0.5f, 1f)
     val earth = glu.gluNewQuadric()
@@ -161,11 +186,15 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
     val stacks = 256
     glu.gluSphere(earth, radius, slices, stacks)
     glu.gluDeleteQuadric(earth)
+
+    gl.glPopMatrix()
   }
 
   override def reshape(drawable: GLAutoDrawable, x: Int, y: Int, width: Int, height: Int): Unit = {
     val gl = drawable.getGL().getGL2
     gl.glViewport(0, 0, width, height)
+    //*NEW* Update mouse bounds for arcball
+    arcBall.setBounds(width, height)
   }
 
   override def dispose(drawable: GLAutoDrawable): Unit = {
