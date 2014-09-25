@@ -190,4 +190,12 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
     printProgramInfoLog(gl, p)
     p
   }
+
+  private def computeArcballVector(screenX: Int, screenY: Int): (Double, Double, Double) = {
+    val x = 1.0 * screenX / getWidth * 2 - 1.0
+    val y = -1.0 * screenY / getHeight * 2 - 1.0
+    val opSquared = x * x + y * y
+    val z = if (opSquared <= 1) math.sqrt(1 - opSquared) else 0
+    null
+  }
 }
