@@ -86,7 +86,8 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
 
     override def mousePressed(e: MouseEvent): Unit = {
       matrixLock.synchronized {
-        LastRot.set( ThisRot ) // Set Last Static Rotation To Last Dynamic One
+        //LastRot.set( ThisRot ) // Set Last Static Rotation To Last Dynamic One
+        LastRot = ThisRot.clone().asInstanceOf[Matrix4f]
       }
       arcBall.click( e.getPoint )    // Update Start Vector And Prepare For Dragging
     }

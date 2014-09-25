@@ -1,8 +1,7 @@
 package texturedsphere;
 
-import com.jogamp.opengl.math.Matrix4;
+class Matrix4f implements Cloneable {
 
-class Matrix4f {
     float M00;
     float M10;
     float M20;
@@ -22,6 +21,28 @@ class Matrix4f {
 
     public Matrix4f() {
         setIdentity();
+    }
+
+    public Matrix4f(float m00, float m01, float m02, float m03,
+                    float m10, float m11, float m12, float m13,
+                    float m20, float m21, float m22, float m23,
+                    float m30, float m31, float m32, float m33) {
+        this.M00 = m00;
+        this.M01 = m01;
+        this.M02 = m02;
+        this.M03 = m03;
+        this.M10 = m10;
+        this.M11 = m11;
+        this.M12 = m12;
+        this.M13 = m13;
+        this.M20 = m20;
+        this.M21 = m21;
+        this.M22 = m22;
+        this.M23 = m23;
+        this.M30 = m30;
+        this.M31 = m31;
+        this.M32 = m32;
+        this.M33 = m33;
     }
 
     void get(float[] dest) {
@@ -94,25 +115,15 @@ class Matrix4f {
         M33 = 1f;
     }
 
-    public final void set(Matrix4f m1) {
-        M00 = m1.M00; M01 = m1.M01; M02 = m1.M02; M03 = m1.M03;
-        M10 = m1.M10; M11 = m1.M11; M12 = m1.M12; M13 = m1.M13;
-        M20 = m1.M20; M21 = m1.M21; M22 = m1.M22; M23 = m1.M23;
-        M30 = m1.M30; M31 = m1.M31; M32 = m1.M32; M33 = m1.M33;
-    }
-
     /**
      * Sets the value of this matrix to the result of multiplying
      * the two argument matrices together.
      *
-     * @param m1 the first matrix
      * @param m2 the second matrix
      */
 
     public final Matrix4f mul(Matrix4f m2) {
-        // alias-safe way.
-        final Matrix4f result = new Matrix4f();
-        result.set(
+        return new Matrix4f(
                 M00 * m2.M00 + M01 * m2.M10 + M02 * m2.M20 + M03 * m2.M30,
                 M00 * m2.M01 + M01 * m2.M11 + M02 * m2.M21 + M03 * m2.M31,
                 M00 * m2.M02 + M01 * m2.M12 + M02 * m2.M22 + M03 * m2.M32,
@@ -133,31 +144,10 @@ class Matrix4f {
                 M30 * m2.M02 + M31 * m2.M12 + M32 * m2.M22 + M33 * m2.M32,
                 M30 * m2.M03 + M31 * m2.M13 + M32 * m2.M23 + M33 * m2.M33
         );
-        return result;
     }
 
-    /**
-     * Sets 16 values
-     */
-    private void set(float m00, float m01, float m02, float m03,
-                     float m10, float m11, float m12, float m13,
-                     float m20, float m21, float m22, float m23,
-                     float m30, float m31, float m32, float m33) {
-        this.M00 = m00;
-        this.M01 = m01;
-        this.M02 = m02;
-        this.M03 = m03;
-        this.M10 = m10;
-        this.M11 = m11;
-        this.M12 = m12;
-        this.M13 = m13;
-        this.M20 = m20;
-        this.M21 = m21;
-        this.M22 = m22;
-        this.M23 = m23;
-        this.M30 = m30;
-        this.M31 = m31;
-        this.M32 = m32;
-        this.M33 = m33;
+    @Override
+    public Matrix4f clone() throws CloneNotSupportedException {
+        return (Matrix4f)super.clone();
     }
 }
