@@ -55,32 +55,28 @@ class ArcBall(NewWidth: Float, NewHeight: Float) {
   }
 
   // Mouse drag, calculate rotation
-  def drag(NewPt: Point, NewRot: Quat4f): Quat4f = {
+  def drag(NewPt: Point): Quat4f = {
 
     // Map the point to the sphere
     this.mapToSphere(NewPt, EnVec)
 
     // Return the quaternion equivalent to the rotation
-    if (NewRot != null) {
-      val Perp: Vector3f = new Vector3f
+    val Perp: Vector3f = new Vector3f
 
-      // Compute the vector perpendicular to the begin and end vectors
-      Vector3f.cross(Perp, StVec, EnVec)
+    // Compute the vector perpendicular to the begin and end vectors
+    Vector3f.cross(Perp, StVec, EnVec)
 
-      // Compute the length of the perpendicular vector
-      if (Perp.length > Epsilon) {
-        // We're ok, so return the perpendicular vector as the transform
-        // after all
+    // Compute the length of the perpendicular vector
+    if (Perp.length > Epsilon) {
+      // We're ok, so return the perpendicular vector as the transform
+      // after all
 
-        // In the quaternion values, w is cosine (theta / 2),
-        // where theta is rotation angle
-        Quat4f(Perp.x, Perp.y, Perp.z, Vector3f.dot(StVec, EnVec))
-      } else {
-        // The begin and end vectors coincide, so return an identity transform
-        Quat4f(0.0f, 0.0f, 0.0f, 0.0f)
-      }
+      // In the quaternion values, w is cosine (theta / 2),
+      // where theta is rotation angle
+      Quat4f(Perp.x, Perp.y, Perp.z, Vector3f.dot(StVec, EnVec))
     } else {
-      Quat4f(0.0f, 0.0f, 0.0f, 0.0f)
+      // The begin and end vectors coincide, so return an identity transform
+      Quat4f.Zero
     }
   }
 }

@@ -98,12 +98,10 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
 
   addMouseMotionListener(new MouseMotionAdapter {
     override def mouseDragged(e: MouseEvent): Unit = {
-      val ThisQuat = new Quat4f(0.0f, 0.0f, 0.0f, 0.0f)
-
       // Update End Vector And Get Rotation As Quaternion
-      val result = arcBall.drag( e.getPoint, ThisQuat)
+      val quat = arcBall.drag( e.getPoint)
       matrixLock.synchronized {
-        ThisRot.setRotation(result)  // Convert Quaternion Into Matrix3fT
+        ThisRot.setRotation(quat)  // Convert Quaternion Into Matrix3fT
         ThisRot.mul( ThisRot, LastRot) // Accumulate Last Rotation Into This One
       }
     }
