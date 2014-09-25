@@ -10,14 +10,14 @@ class ArcBall(NewWidth: Float, NewHeight: Float) {
 
   import ArcBall._
 
-  private var StVec = new Vector3f
-  private var EnVec = new Vector3f
+  private var StVec = Vector3f.Zero
+  private var EnVec = Vector3f.Zero
   private var adjustWidth: Float = 0.0f
   private var adjustHeight: Float = 0.0f
 
   setBounds(NewWidth, NewHeight)
 
-  def mapToSphere(point: Point, vector: Vector3f) {
+  def mapToSphere(point: Point): Vector3f = {
     // Copy paramter into temp point and adjust point coords and scale down to range of [-1 ... 1]
     val tempPoint = Point2f((point.x * this.adjustWidth) - 1.0f, 1.0f - (point.y * this.adjustHeight))
 
@@ -30,20 +30,16 @@ class ArcBall(NewWidth: Float, NewHeight: Float) {
       val norm = (1.0 / Math.sqrt(length)).asInstanceOf[Float]
 
       // Return the "normalized" vector, a point on the sphere
-      vector.x = tempPoint.x * norm
-      vector.y = tempPoint.y * norm
-      vector.z = 0.0f
+      new Vector3f(tempPoint.x * norm, tempPoint.y * norm, 0.0f)
     } else {
       // Return a vector to a point mapped inside the sphere
       // sqrt(radius squared - length)
-      vector.x = tempPoint.x
-      vector.y = tempPoint.y
-      vector.z = Math.sqrt(1.0f - length).asInstanceOf[Float]
+      new Vector3f(tempPoint.x, tempPoint.y, Math.sqrt(1.0f - length).asInstanceOf[Float])
     }
   }
 
   def setBounds(NewWidth: Float, NewHeight: Float) {
-    assert(((NewWidth > 1.0f) && (NewHeight > 1.0f)))
+    assert((NewWidth > 1.0f) && (NewHeight > 1.0f))
 
     // Set adjustment factor for width/height
     adjustWidth = 1.0f / ((NewWidth - 1.0f) * 0.5f)
@@ -51,20 +47,19 @@ class ArcBall(NewWidth: Float, NewHeight: Float) {
   }
 
   def click(NewPt: Point) {
-    mapToSphere(NewPt, this.StVec)
+    this.StVec = mapToSphere(NewPt)
   }
 
   // Mouse drag, calculate rotation
   def drag(NewPt: Point): Quat4f = {
 
     // Map the point to the sphere
-    this.mapToSphere(NewPt, EnVec)
+    this.EnVec = this.mapToSphere(NewPt)
 
     // Return the quaternion equivalent to the rotation
-    val Perp: Vector3f = new Vector3f
 
     // Compute the vector perpendicular to the begin and end vectors
-    Vector3f.cross(Perp, StVec, EnVec)
+    val Perp = Vector3f.cross(StVec, EnVec)
 
     // Compute the length of the perpendicular vector
     if (Perp.length > Epsilon) {

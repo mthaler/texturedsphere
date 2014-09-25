@@ -34,7 +34,7 @@ object TexturedSphere {
         frame.addWindowListener(new WindowAdapter {
           override def windowClosing(e: WindowEvent) {
             new Thread {
-              override def run {
+              override def run() {
                 if (animator.isStarted) animator.stop
                 System.exit(0)
               }
@@ -50,7 +50,7 @@ object TexturedSphere {
   }
 
   private def loadTexture(gl: GL2, filename: String): Texture = {
-    val stream = getClass().getResourceAsStream(filename)
+    val stream = getClass.getResourceAsStream(filename)
     val data = TextureIO.newTextureData(GLProfile.getDefault, stream, false, "jpg")
     val tex = TextureIO.newTexture(data)
     tex.setTexParameteri(gl, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT)
@@ -114,7 +114,7 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
     ThisRot.setIdentity()                                // Reset Rotation
     ThisRot.get(matrix)
 
-    val gl = drawable.getGL().getGL2
+    val gl = drawable.getGL.getGL2
     drawable.setGL(new DebugGL2(gl)) // enable stack traces
 
     this.programID = newProgram(drawable.getGL.getGL2)
@@ -170,7 +170,7 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
     specTexture.bind(gl)
 
     gl.glPushMatrix();                  // NEW: Prepare Dynamic Transform
-    gl.glMultMatrixf(matrix, 0);
+    gl.glMultMatrixf(matrix, 0)
 
     // Draw sphere (possible styles: FILL, LINE, POINT).
     gl.glColor3f(0.3f, 0.5f, 1f)
@@ -189,7 +189,7 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
   }
 
   override def reshape(drawable: GLAutoDrawable, x: Int, y: Int, width: Int, height: Int): Unit = {
-    val gl = drawable.getGL().getGL2
+    val gl = drawable.getGL.getGL2
     gl.glViewport(0, 0, width, height)
     //*NEW* Update mouse bounds for arcball
     arcBall.setBounds(width, height)
@@ -201,11 +201,11 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
 
   private def setCamera(gl: GL2, glu: GLU, distance: Float) {
     // Change to projection matrix.
-    gl.glMatrixMode(GL_PROJECTION);
+    gl.glMatrixMode(GL_PROJECTION)
     gl.glLoadIdentity()
 
     // Perspective.
-    val widthHeightRatio = getWidth().toFloat / getHeight().toFloat
+    val widthHeightRatio = getWidth.toFloat / getHeight.toFloat
     glu.gluPerspective(45, widthHeightRatio, 1, 1000)
     glu.gluLookAt(0, 0, distance, 0, 0, 0, 0, 1, 0)
 

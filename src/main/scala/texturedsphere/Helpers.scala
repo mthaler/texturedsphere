@@ -57,10 +57,10 @@ object Helpers {
         strBuilder.append(line + "\n")
         line = reader.readLine
       }
-      reader.close
-      stream.close
+      reader.close()
+      stream.close()
     } catch {
-      case e: IOException => e.printStackTrace
+      case e: IOException => e.printStackTrace()
     }
     strBuilder.toString
   }
