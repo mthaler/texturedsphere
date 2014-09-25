@@ -92,7 +92,7 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
 
   addMouseMotionListener(new MouseMotionAdapter {
     override def mouseDragged(e: MouseEvent): Unit = {
-      println("angle: " + computeArcballAngle(e.getPoint))
+      println("mouse dragged: " + e.getPoint)
     }
   })
 
@@ -195,29 +195,5 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
     val p: Int = createProgram(gl, v, f)
     printProgramInfoLog(gl, p)
     p
-  }
-
-  private def computeArcballVector(screenX: Int, screenY: Int): Vector3 = {
-    import math._
-    val x = 1.0 * screenX / getWidth * 2 - 1.0
-    val y = -1.0 * screenY / getHeight * 2 - 1.0
-    val opSquared = x * x + y * y
-    if (opSquared <= 1) {
-      new Vector3(x, y, sqrt(1 - opSquared))
-    } else {
-      new Vector3(x, y , 0).normalize()
-    }
-  }
-
-  private def computeArcballAngle(currentPos: Point): Double = {
-    import math._
-    if (currentPos != pos) {
-      val va = computeArcballVector(pos.x, pos.y)
-      val vb = computeArcballVector(currentPos.x, currentPos.y)
-      val angle = acos(min(1.0, va.dotProduct(vb)))
-      angle
-    } else {
-      0.0
-    }
   }
 }
