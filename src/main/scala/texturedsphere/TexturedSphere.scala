@@ -1,7 +1,7 @@
 package texturedsphere
 
 import java.awt.Dimension
-import java.awt.event.{WindowEvent, WindowAdapter}
+import java.awt.event._
 import javax.media.opengl.GL._
 import javax.media.opengl.GL2ES1._
 import javax.media.opengl.fixedfunc.GLLightingFunc._
@@ -54,12 +54,28 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
 
   addGLEventListener(this)
 
+  addMouseListener(new MouseAdapter {
+
+    override def mousePressed(e: MouseEvent): Unit = {
+      println("mouse pressed: " + e.getPoint)
+    }
+
+    override def mouseReleased(e: MouseEvent): Unit = {
+      println("mouse released: " + e.getPoint)
+    }
+  })
+
+  addMouseMotionListener(new MouseMotionAdapter {
+    override def mouseDragged(e: MouseEvent): Unit = {
+      println("mouse dragged: " + e.getPoint)
+    }
+  })
+
   private val glu = new GLU()
 
   private var earthTexture: Texture = null
   private var nightTexture: Texture = null
   private var specTexture: Texture = null
-  private var rot = 0.0f
 
   private var programID = -1
 
@@ -127,8 +143,6 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
     specTexture.enable(gl)
     specTexture.bind(gl)
 
-    gl.glRotatef(rot,1.0f,0.0f,0.0f);
-
     // Draw sphere (possible styles: FILL, LINE, POINT).
     gl.glColor3f(0.3f, 0.5f, 1f)
     val earth = glu.gluNewQuadric()
@@ -141,8 +155,6 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
     val stacks = 256
     glu.gluSphere(earth, radius, slices, stacks)
     glu.gluDeleteQuadric(earth)
-
-    rot += 0.2f
   }
 
   override def reshape(drawable: GLAutoDrawable, x: Int, y: Int, width: Int, height: Int): Unit = {
