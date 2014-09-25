@@ -58,21 +58,21 @@ class Matrix4f {
         float xx, xy, xz;
         float yy, yz, zz;
 
-        n = (q1.x * q1.x) + (q1.y * q1.y) + (q1.z * q1.z) + (q1.w * q1.w);
+        n = (q1.x() * q1.x()) + (q1.y() * q1.y()) + (q1.z() * q1.z()) + (q1.w() * q1.w());
         s = (n > 0.0f) ? (2.0f / n) : 0.0f;
 
-        xs = q1.x * s;
-        ys = q1.y * s;
-        zs = q1.z * s;
-        wx = q1.w * xs;
-        wy = q1.w * ys;
-        wz = q1.w * zs;
-        xx = q1.x * xs;
-        xy = q1.x * ys;
-        xz = q1.x * zs;
-        yy = q1.y * ys;
-        yz = q1.y * zs;
-        zz = q1.z * zs;
+        xs = q1.x() * s;
+        ys = q1.y() * s;
+        zs = q1.z() * s;
+        wx = q1.w() * xs;
+        wy = q1.w() * ys;
+        wz = q1.w() * zs;
+        xx = q1.x() * xs;
+        xy = q1.x() * ys;
+        xz = q1.x() * zs;
+        yy = q1.y() * ys;
+        yz = q1.y() * zs;
+        zz = q1.z() * zs;
 
         M00 = 1.0f - (yy + zz);
         M01 = xy - wz;

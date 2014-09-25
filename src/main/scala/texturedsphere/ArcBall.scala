@@ -55,7 +55,7 @@ class ArcBall(NewWidth: Float, NewHeight: Float) {
   }
 
   // Mouse drag, calculate rotation
-  def drag(NewPt: Point, NewRot: Quat4f) {
+  def drag(NewPt: Point, NewRot: Quat4f): Quat4f = {
 
     // Map the point to the sphere
     this.mapToSphere(NewPt, EnVec)
@@ -71,19 +71,16 @@ class ArcBall(NewWidth: Float, NewHeight: Float) {
       if (Perp.length > Epsilon) {
         // We're ok, so return the perpendicular vector as the transform
         // after all
-        NewRot.x = Perp.x
-        NewRot.y = Perp.y
-        NewRot.z = Perp.z
+
         // In the quaternion values, w is cosine (theta / 2),
         // where theta is rotation angle
-        NewRot.w = Vector3f.dot(StVec, EnVec)
+        Quat4f(Perp.x, Perp.y, Perp.z, Vector3f.dot(StVec, EnVec))
       } else {
         // The begin and end vectors coincide, so return an identity transform
-        NewRot.x = 0.0f
-        NewRot.y = 0.0f
-        NewRot.z = 0.0f
-        NewRot.w = 0.0f
+        Quat4f(0.0f, 0.0f, 0.0f, 0.0f)
       }
+    } else {
+      Quat4f(0.0f, 0.0f, 0.0f, 0.0f)
     }
   }
 }
