@@ -109,29 +109,29 @@ class Matrix4f {
      * @param m2 the second matrix
      */
 
-    public final Matrix4f mul(Matrix4f m1, Matrix4f m2) {
+    public final Matrix4f mul(Matrix4f m2) {
         // alias-safe way.
         final Matrix4f result = new Matrix4f();
         result.set(
-                m1.M00 * m2.M00 + m1.M01 * m2.M10 + m1.M02 * m2.M20 + m1.M03 * m2.M30,
-                m1.M00 * m2.M01 + m1.M01 * m2.M11 + m1.M02 * m2.M21 + m1.M03 * m2.M31,
-                m1.M00 * m2.M02 + m1.M01 * m2.M12 + m1.M02 * m2.M22 + m1.M03 * m2.M32,
-                m1.M00 * m2.M03 + m1.M01 * m2.M13 + m1.M02 * m2.M23 + m1.M03 * m2.M33,
+                M00 * m2.M00 + M01 * m2.M10 + M02 * m2.M20 + M03 * m2.M30,
+                M00 * m2.M01 + M01 * m2.M11 + M02 * m2.M21 + M03 * m2.M31,
+                M00 * m2.M02 + M01 * m2.M12 + M02 * m2.M22 + M03 * m2.M32,
+                M00 * m2.M03 + M01 * m2.M13 + M02 * m2.M23 + M03 * m2.M33,
 
-                m1.M10 * m2.M00 + m1.M11 * m2.M10 + m1.M12 * m2.M20 + m1.M13 * m2.M30,
-                m1.M10 * m2.M01 + m1.M11 * m2.M11 + m1.M12 * m2.M21 + m1.M13 * m2.M31,
-                m1.M10 * m2.M02 + m1.M11 * m2.M12 + m1.M12 * m2.M22 + m1.M13 * m2.M32,
-                m1.M10 * m2.M03 + m1.M11 * m2.M13 + m1.M12 * m2.M23 + m1.M13 * m2.M33,
+                M10 * m2.M00 + M11 * m2.M10 + M12 * m2.M20 + M13 * m2.M30,
+                M10 * m2.M01 + M11 * m2.M11 + M12 * m2.M21 + M13 * m2.M31,
+                M10 * m2.M02 + M11 * m2.M12 + M12 * m2.M22 + M13 * m2.M32,
+                M10 * m2.M03 + M11 * m2.M13 + M12 * m2.M23 + M13 * m2.M33,
 
-                m1.M20 * m2.M00 + m1.M21 * m2.M10 + m1.M22 * m2.M20 + m1.M23 * m2.M30,
-                m1.M20 * m2.M01 + m1.M21 * m2.M11 + m1.M22 * m2.M21 + m1.M23 * m2.M31,
-                m1.M20 * m2.M02 + m1.M21 * m2.M12 + m1.M22 * m2.M22 + m1.M23 * m2.M32,
-                m1.M20 * m2.M03 + m1.M21 * m2.M13 + m1.M22 * m2.M23 + m1.M23 * m2.M33,
+                M20 * m2.M00 + M21 * m2.M10 + M22 * m2.M20 + M23 * m2.M30,
+                M20 * m2.M01 + M21 * m2.M11 + M22 * m2.M21 + M23 * m2.M31,
+                M20 * m2.M02 + M21 * m2.M12 + M22 * m2.M22 + M23 * m2.M32,
+                M20 * m2.M03 + M21 * m2.M13 + M22 * m2.M23 + M23 * m2.M33,
 
-                m1.M30 * m2.M00 + m1.M31 * m2.M10 + m1.M32 * m2.M20 + m1.M33 * m2.M30,
-                m1.M30 * m2.M01 + m1.M31 * m2.M11 + m1.M32 * m2.M21 + m1.M33 * m2.M31,
-                m1.M30 * m2.M02 + m1.M31 * m2.M12 + m1.M32 * m2.M22 + m1.M33 * m2.M32,
-                m1.M30 * m2.M03 + m1.M31 * m2.M13 + m1.M32 * m2.M23 + m1.M33 * m2.M33
+                M30 * m2.M00 + M31 * m2.M10 + M32 * m2.M20 + M33 * m2.M30,
+                M30 * m2.M01 + M31 * m2.M11 + M32 * m2.M21 + M33 * m2.M31,
+                M30 * m2.M02 + M31 * m2.M12 + M32 * m2.M22 + M33 * m2.M32,
+                M30 * m2.M03 + M31 * m2.M13 + M32 * m2.M23 + M33 * m2.M33
         );
         return result;
     }
