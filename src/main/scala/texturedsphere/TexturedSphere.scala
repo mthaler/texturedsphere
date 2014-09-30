@@ -27,7 +27,7 @@ object TexturedSphere {
         val glp = GLProfile.get(GLProfile.GL2)
         val glCapabilities: GLCapabilities = new GLCapabilities(glp)
         val canvas = new TexturedSphere(glCapabilities)
-        canvas.setPreferredSize(new Dimension(640, 480))
+        canvas.setPreferredSize(new Dimension(640, 640))
         val animator = new FPSAnimator(canvas, 60, true)
         val frame = new JFrame
         frame.getContentPane.add(canvas)
@@ -73,22 +73,18 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
 
   private var programID = -1
 
-  private var LastRot = new Matrix4f()
-  private var ThisRot = new Matrix4f()
-  private val matrixLock = new Object()
+  @volatile private var LastRot = Matrix4f.Identity
+  @volatile private var ThisRot = Matrix4f.Identity
   private val matrix = new Array[Float](16)
 
-  private val arcBall = new ArcBall(640.0f, 480.0f)  // NEW: ArcBall Instance
+  private val arcBall = new ArcBall(640.0f, 640.0f)  // NEW: ArcBall Instance
 
   addGLEventListener(this)
 
   addMouseListener(new MouseAdapter {
 
     override def mousePressed(e: MouseEvent): Unit = {
-      matrixLock.synchronized {
-        //LastRot.set( ThisRot ) // Set Last Static Rotation To Last Dynamic One
-        LastRot = ThisRot.clone().asInstanceOf[Matrix4f]
-      }
+      LastRot = ThisRot
       arcBall.click( e.getPoint )    // Update Start Vector And Prepare For Dragging
     }
 
@@ -101,18 +97,16 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
     override def mouseDragged(e: MouseEvent): Unit = {
       // Update End Vector And Get Rotation As Quaternion
       val quat = arcBall.drag( e.getPoint)
-      matrixLock.synchronized {
-        ThisRot.setRotation(quat)  // Convert Quaternion Into Matrix3fT
-        ThisRot = ThisRot.mul(LastRot) // Accumulate Last Rotation Into This One
-      }
+      ThisRot = Matrix4f.rotation(quat)  // Convert Quaternion Into Matrix3fT
+      ThisRot = ThisRot.mul(LastRot) // Accumulate Last Rotation Into This One
     }
   })
 
   override def init(drawable: GLAutoDrawable): Unit = {
 
     // Start Of User Initialization
-    LastRot = new Matrix4f()                                // Reset Rotation
-    ThisRot = new Matrix4f()                                // Reset Rotation
+    LastRot = Matrix4f.Identity // Reset Rotation
+    ThisRot = Matrix4f.Identity // Reset Rotation
     ThisRot.get(matrix)
 
     val gl = drawable.getGL.getGL2
@@ -134,9 +128,7 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
   }
 
   override def display(drawable: GLAutoDrawable): Unit = {
-    matrixLock.synchronized {
-      ThisRot.get(matrix)
-    }
+    ThisRot.get(matrix)
 
     val gl = drawable.getGL.getGL2
     gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -173,6 +165,9 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
     gl.glPushMatrix();                  // NEW: Prepare Dynamic Transform
     gl.glMultMatrixf(matrix, 0)
 
+
+    gl.glRotatef(-90, 1, 0, 0)
+
     // Draw sphere (possible styles: FILL, LINE, POINT).
     gl.glColor3f(0.3f, 0.5f, 1f)
     val earth = glu.gluNewQuadric()
@@ -207,7 +202,8 @@ class TexturedSphere(caps: GLCapabilities) extends GLCanvas(caps) with GLEventLi
 
     // Perspective.
     val widthHeightRatio = getWidth.toFloat / getHeight.toFloat
-    glu.gluPerspective(45, widthHeightRatio, 1, 1000)
+    //glu.gluPerspective(45, widthHeightRatio, 1, 1000)
+    gl.glOrtho(-10, 10, -10, 10, 1, 1000)
     glu.gluLookAt(0, 0, distance, 0, 0, 0, 0, 1, 0)
 
     // Change back to model view matrix.
